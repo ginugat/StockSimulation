@@ -2,6 +2,9 @@
 package controller;
 
 import beans.Stock;
+import beans.StockDAO;
+import datarepository.StockServiceDAO;
+
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,8 +21,23 @@ public class HelloWorld {
     }
 
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    public String postMessage(final List<Stock> stocks) {
-        return String.valueOf(stocks.get(0).getId());
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Stock> postMessage(final List<Stock> stocks) {
+
+        int list_size = stocks.size();
+        String[] ids = new String[list_size];
+        StockDAO[] outputStocks = new StockDAO[list_size];
+        String id;
+        long quantity;
+        int counter;
+        for (int i = 0; i < list_size; i++) {
+            id = stocks.get(i).getId();
+            //quantity = stocks.get(i).getQuantity();
+            //counter = stocks.get(i).getCounter();
+            ids[i] = id;
+        }
+        System.out.println(StockServiceDAO.buysellStocks(ids));
+        return StockServiceDAO.buysellStocks(ids);
+
     }
 }
