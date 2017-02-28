@@ -15,6 +15,7 @@ public interface StocksContants {
 	public String DB_USER = "root";
 	public String DB_PASSWORD = "tejaswi";
 	public String GET_STOCKS_QUERY = "SELECT * FROM Stocks WHERE ticker = ?";
+	public String BUYSELL_STOCKS_QUERY = "SELECT ticker,price,counter FROM Stocks WHERE ticker = ?";
 	public String GET_COUNTER_QUERY = "SELECT counter FROM Stocks WHERE ticker = ?";
 	public String INSERT_STOCK_QUERY = "INSERT into Stocks(ticker, price, change_amount, change_percent, counter) VALUES (?, ?, ?, ?, ?)";
 	public String UPDATE_STOCK_QUERY = "UPDATE Stocks SET price=?, change_amount=?, change_percent=?, counter=? WHERE ticker=?";
@@ -23,5 +24,6 @@ public interface StocksContants {
 	public String COUNTER = "counter";
 	public String CHANGE_AMOUNT = "change_amount";
 	public String CHANGE_PERCENT = "change_percent";
+	public String QUANTITY = "quantity";
 
 }

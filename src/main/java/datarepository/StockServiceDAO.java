@@ -4,10 +4,13 @@
 package datarepository;
 
 
+import beans.Stock;
 import beans.StockDAO;
 import constants.StocksContants;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Paranjit Singh
@@ -158,6 +161,48 @@ public class StockServiceDAO {
 		return stocks;
 	}
 
+	public static List<Stock> buysellStocks(String tickers[]) {
+
+		List<Stock> stocks = new ArrayList<Stock>();
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+
+			connection = getConnection();
+			preparedStatement = connection.prepareStatement(StocksContants.BUYSELL_STOCKS_QUERY);
+
+			for(int i = 0; i < tickers.length; i++){
+				preparedStatement.setString(1, tickers[i]);
+				ResultSet resultSet = preparedStatement.executeQuery();
+
+
+				while (resultSet.next()) {
+					Stock stock = new Stock(resultSet.getString(StocksContants.TICKER),
+							resultSet.getInt(StocksContants.COUNTER), resultSet.getFloat(StocksContants.PRICE), resultSet.getLong(StocksContants.QUANTITY));
+
+					stocks.add(stock);
+				}
+
+			}
+
+
+			if (preparedStatement != null) {
+				preparedStatement.close();
+			}
+
+			if (connection != null) {
+				connection.close();
+			}
+
+		} catch (SQLException e) {
+
+			System.out.println(e.getMessage());
+
+		}
+
+		return stocks;
+	}
 	private static Connection getConnection() {
 
 		Connection dbConnection = null;

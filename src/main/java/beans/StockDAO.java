@@ -31,6 +31,7 @@ public class StockDAO {
 		this.change_percent = change_percent;
 	}
 
+
 	/**
 	 * @return the ticker
 	 */
