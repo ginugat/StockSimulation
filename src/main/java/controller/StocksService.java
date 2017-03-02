@@ -1,20 +1,21 @@
-/**
- *
- */
+
 package controller;
 
+import beans.ProcessStock.ProcessStockData;
+import beans.ProcessStock.ProcessStockRequest;
+import beans.ProcessStock.ProcessStockResponse;
 import beans.StockDAO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import datarepository.StockServiceDAO;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @author Paranjit Singh
@@ -22,14 +23,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("/stocks")
 public class StocksService {
 
-    @GET
-    @Path("/some")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String simple() {
-        return "hello";
-    }
-
-    @Path("/getStocks")
+    @Path("/getStock")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getStocks(@Context UriInfo uriInfo) {
@@ -49,6 +43,22 @@ public class StocksService {
                 e.printStackTrace();
             }
         }
+
+        return response;
+    }
+
+    @Path("/processStock")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public ProcessStockResponse postMessage(ProcessStockRequest processStockRequest) {
+        List<ProcessStockData> buySellStocks = StockServiceDAO.processStocks(processStockRequest.getStock());
+
+        ProcessStockResponse response = new ProcessStockResponse();
+        response.setStock(buySellStocks);
+
+        Random random = new Random();
+        response.setTransactionID(Math.abs(random.nextInt()));
 
         return response;
     }

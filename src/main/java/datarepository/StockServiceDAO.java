@@ -1,10 +1,10 @@
 /**
- * 
+ *
  */
 package datarepository;
 
 
-import beans.Stock;
+import beans.ProcessStock.ProcessStockData;
 import beans.StockDAO;
 import constants.StocksContants;
 
@@ -14,222 +14,236 @@ import java.util.List;
 
 /**
  * @author Paranjit Singh
- *
  */
 public class StockServiceDAO {
 
-	public static int getCounterValue(String ticker) {
+    public static int getCounterValue(String ticker) {
 
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
-		int counter = 0;
-		try {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        int counter = 0;
+        try {
 
-			connection = getConnection();
-			preparedStatement = connection.prepareStatement(StocksContants.GET_COUNTER_QUERY);
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(StocksContants.GET_COUNTER_QUERY);
 
-			preparedStatement.setString(1, ticker);
+            preparedStatement.setString(1, ticker);
 
-			ResultSet resultSet = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-			if (resultSet.next()) {
-				counter = resultSet.getInt(StocksContants.COUNTER);
-			}
+            if (resultSet.next()) {
+                counter = resultSet.getInt(StocksContants.COUNTER);
+            }
 
-			if (preparedStatement != null) {
-				preparedStatement.close();
-			}
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
 
-			if (connection != null) {
-				connection.close();
-			}
+            if (connection != null) {
+                connection.close();
+            }
 
-		} catch (SQLException e) {
+        } catch (SQLException e) {
 
-			System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
 
-		}
+        }
 
-		return counter;
-	}
+        return counter;
+    }
 
-	public static void saveStock(StockDAO stockDAO) {
+    public static void saveStock(StockDAO stockDAO) {
 
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
 
-		try {
+        try {
 
-			connection = getConnection();
-			preparedStatement = connection.prepareStatement(StocksContants.INSERT_STOCK_QUERY);
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(StocksContants.INSERT_STOCK_QUERY);
 
-			preparedStatement.setString(1, stockDAO.getTicker());
-			preparedStatement.setFloat(2, stockDAO.getPrice());
-			preparedStatement.setFloat(3, stockDAO.getChange_amount());
-			preparedStatement.setFloat(4, stockDAO.getChange_percent());
-			preparedStatement.setInt(5, stockDAO.getCounter());
+            preparedStatement.setString(1, stockDAO.getTicker());
+            preparedStatement.setFloat(2, stockDAO.getPrice());
+            preparedStatement.setFloat(3, stockDAO.getChange_amount());
+            preparedStatement.setFloat(4, stockDAO.getChange_percent());
+            preparedStatement.setInt(5, stockDAO.getCounter());
 
-			preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
 
-			if (preparedStatement != null) {
-				preparedStatement.close();
-			}
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
 
-			if (connection != null) {
-				connection.close();
-			}
+            if (connection != null) {
+                connection.close();
+            }
 
-		} catch (SQLException e) {
+        } catch (SQLException e) {
 
-			System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
 
-		}
-	}
+        }
+    }
 
-	public static void updateStock(StockDAO stockDAO) {
+    public static void updateStock(StockDAO stockDAO) {
 
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
 
-		try {
+        try {
 
-			connection = getConnection();
-			preparedStatement = connection.prepareStatement(StocksContants.UPDATE_STOCK_QUERY);
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(StocksContants.UPDATE_STOCK_QUERY);
 
-			preparedStatement.setFloat(1, stockDAO.getPrice());
-			preparedStatement.setFloat(2, stockDAO.getChange_amount());
-			preparedStatement.setFloat(3, stockDAO.getChange_percent());
-			preparedStatement.setInt(4, stockDAO.getCounter());
-			preparedStatement.setString(5, stockDAO.getTicker());
-			preparedStatement.executeUpdate();
+            preparedStatement.setFloat(1, stockDAO.getPrice());
+            preparedStatement.setFloat(2, stockDAO.getChange_amount());
+            preparedStatement.setFloat(3, stockDAO.getChange_percent());
+            preparedStatement.setInt(4, stockDAO.getCounter());
+            preparedStatement.setString(5, stockDAO.getTicker());
+            preparedStatement.executeUpdate();
 
-			if (preparedStatement != null) {
-				preparedStatement.close();
-			}
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
 
-			if (connection != null) {
-				connection.close();
-			}
+            if (connection != null) {
+                connection.close();
+            }
 
-		} catch (SQLException e) {
+        } catch (SQLException e) {
 
-			System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
 
-		}
-	}
+        }
+    }
 
-	public static StockDAO[] getStocks(String tickers[]) {
+    public static StockDAO[] getStocks(String tickers[]) {
 
-		StockDAO stocks[] = new StockDAO[tickers.length];
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
+        StockDAO stocks[] = new StockDAO[tickers.length];
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
 
-		try {
+        try {
 
-			connection = getConnection();
-			preparedStatement = connection.prepareStatement(StocksContants.GET_STOCKS_QUERY);
-			
-			for(int i = 0; i < tickers.length; i++){
-				preparedStatement.setString(1, tickers[i]);
-				ResultSet resultSet = preparedStatement.executeQuery();
-				
-				while (resultSet.next()) {
-					StockDAO stockDAO = new StockDAO(resultSet.getString(StocksContants.TICKER),
-							resultSet.getInt(StocksContants.COUNTER), resultSet.getFloat(StocksContants.PRICE),
-							resultSet.getFloat(StocksContants.CHANGE_AMOUNT),
-							resultSet.getFloat(StocksContants.CHANGE_PERCENT));
-					stocks[i] = stockDAO;
-				}
-				
-			}
-						
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(StocksContants.GET_STOCKS_QUERY);
 
-			if (preparedStatement != null) {
-				preparedStatement.close();
-			}
+            for (int i = 0; i < tickers.length; i++) {
+                preparedStatement.setString(1, tickers[i]);
+                ResultSet resultSet = preparedStatement.executeQuery();
 
-			if (connection != null) {
-				connection.close();
-			}
+                while (resultSet.next()) {
+                    StockDAO stockDAO = new StockDAO(resultSet.getString(StocksContants.TICKER),
+                            resultSet.getInt(StocksContants.COUNTER), resultSet.getFloat(StocksContants.PRICE),
+                            resultSet.getFloat(StocksContants.CHANGE_AMOUNT),
+                            resultSet.getFloat(StocksContants.CHANGE_PERCENT));
+                    stocks[i] = stockDAO;
+                }
 
-		} catch (SQLException e) {
+            }
 
-			System.out.println(e.getMessage());
 
-		}
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
 
-		return stocks;
-	}
+            if (connection != null) {
+                connection.close();
+            }
 
-	public static List<Stock> buysellStocks(String tickers[]) {
+        } catch (SQLException e) {
 
-		List<Stock> stocks = new ArrayList<Stock>();
-		Connection connection = null;
-		PreparedStatement preparedStatement = null;
+            System.out.println(e.getMessage());
 
-		try {
+        }
 
-			connection = getConnection();
-			preparedStatement = connection.prepareStatement(StocksContants.BUYSELL_STOCKS_QUERY);
+        return stocks;
+    }
 
-			for(int i = 0; i < tickers.length; i++){
-				preparedStatement.setString(1, tickers[i]);
-				ResultSet resultSet = preparedStatement.executeQuery();
+    public static List<ProcessStockData> processStocks(List<ProcessStockData> inputStocks) {
 
+        List<ProcessStockData> stocks = new ArrayList<ProcessStockData>();
+        Connection connection;
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
 
-				while (resultSet.next()) {
-					Stock stock = new Stock(resultSet.getString(StocksContants.TICKER),
-							resultSet.getInt(StocksContants.COUNTER), resultSet.getFloat(StocksContants.PRICE), resultSet.getLong(StocksContants.QUANTITY));
+        try {
 
-					stocks.add(stock);
-				}
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement(StocksContants.BUYSELL_STOCKS_QUERY);
 
-			}
+            for (ProcessStockData inputStock : inputStocks) {
+                preparedStatement.setString(1, inputStock.getId());
+                resultSet = preparedStatement.executeQuery();
 
+                while (resultSet.next()) {
 
-			if (preparedStatement != null) {
-				preparedStatement.close();
-			}
 
-			if (connection != null) {
-				connection.close();
-			}
+                    String tickerId = resultSet.getString(StocksContants.TICKER);
+                    long quantity = inputStock.getQuantity();
+                    int counter = resultSet.getInt(StocksContants.COUNTER);
+                    float price = resultSet.getFloat(StocksContants.PRICE);
 
-		} catch (SQLException e) {
+                    double amount = 0;
 
-			System.out.println(e.getMessage());
+                    if (inputStock.getCounter() == counter) {
+                        amount = Math.abs(price * quantity);
+                    }
 
-		}
+                    ProcessStockData stock =
+                            new ProcessStockData(
+                                    tickerId,
+                                    quantity,
+                                    inputStock.getCounter(),
+                                    amount
+                            );
 
-		return stocks;
-	}
-	private static Connection getConnection() {
+                    stocks.add(stock);
+                }
 
-		Connection dbConnection = null;
+            }
 
-		try {
 
-			Class.forName(StocksContants.DB_DRIVER);
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
 
-		} catch (ClassNotFoundException e) {
+            connection.close();
 
-			System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-		}
+        return stocks;
+    }
 
-		try {
+    private static Connection getConnection() {
 
-			dbConnection = DriverManager.getConnection(StocksContants.DB_CONNECTION, StocksContants.DB_USER,
-					StocksContants.DB_PASSWORD);
-			return dbConnection;
+        Connection dbConnection = null;
 
-		} catch (SQLException e) {
+        try {
 
-			System.out.println(e.getMessage());
+            Class.forName(StocksContants.DB_DRIVER);
 
-		}
+        } catch (ClassNotFoundException e) {
 
-		return dbConnection;
+            System.out.println(e.getMessage());
 
-	}
+        }
+
+        try {
+
+            dbConnection = DriverManager.getConnection(StocksContants.DB_CONNECTION, StocksContants.DB_USER,
+                    StocksContants.DB_PASSWORD);
+            return dbConnection;
+
+        } catch (SQLException e) {
+
+            System.out.println(e.getMessage());
+
+        }
+
+        return dbConnection;
+
+    }
 }
