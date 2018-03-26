@@ -17,9 +17,6 @@ import javax.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.Random;
 
-/**
- * @author Paranjit Singh
- */
 @Path("/stocks")
 public class StocksService {
 
